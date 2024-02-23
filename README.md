@@ -3,6 +3,7 @@
 This repository is accompanying my personal blog. Dive deeper into topics covered in my blog posts:
 
 [Part 1 - The Component - Explore insights and code examples related to component development.]()
+
 [Part 2 - Unit Testing - Learn about strategies and best practices for unit testing your codebase.]()
 
 ## Project Setup
