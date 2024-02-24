@@ -27,40 +27,41 @@ describe('TheAccordion', () => {
     render();
   });
 
-  it('renders properly', () => {
-    const group = wrapper.find('[data-test-id="accordion-group"]');
-    
-    expect(group.exists()).toBe(true);
+  describe('Rendering', () => {
+    it('renders properly', () => {
+      const group = wrapper.find('[data-test-id="accordion-group"]');
+      const sections = wrapper.findAll('.accordion');
 
-    const sections = wrapper.findAll('.accordion');
-    expect(sections.length).toBe(3);
+      expect(group.exists()).toBe(true);
+      expect(sections.length).toBe(3);
+    })
+
+    it('should have the correct number of panels', () => {
+      const panels = wrapper.findAll('.accordion-panel');
+      expect(panels.length).toBe(3);
+    })
+
+    it('should have the correct number of buttons', () => {
+      const buttons = wrapper.findAll('.accordion-button');
+      expect(buttons.length).toBe(3);
+    })
+
+    it('should render the correct heading element', () => {
+      render({ headingAs: 'h2' });
+
+      const headings = wrapper.findAll('h2');
+      expect(headings.length).toBe(3);
+    })
+
+    it('should render with an initial opened section', async () => {
+      render({ initialOpen: 's2' });
+
+      await vm.$nextTick();
+
+      const panels = wrapper.findAll('.accordion-panel');
+      expect(panels.at(1).isVisible()).toBe(true);
+    })
   })
-
-  it('should have the correct number of panels', () => {
-    const sections = wrapper.findAll('.accordion-panel');
-    expect(sections.length).toBe(3);
-  })
-
-  it('should have the correct number of buttons', () => {
-    const buttons = wrapper.findAll('.accordion-button');
-    expect(buttons.length).toBe(3);
-  })
-
-  it('should render the correct heading element', () => {
-    render({ headingAs: 'h2' });
-
-    const headings = wrapper.findAll('h2');
-    expect(headings.length).toBe(3);
-  });
-
-  it('should render the correct initial open section', async () => {
-    render({ initialOpen: 's2' });
-
-    await vm.$nextTick();
-
-    const panels = wrapper.findAll('.accordion-panel');
-    expect(panels.at(1).isVisible()).toBe(true);
-  });
 
   describe('Behavior', () => {
     let panel;
@@ -71,8 +72,9 @@ describe('TheAccordion', () => {
       button = wrapper.find('.accordion-button');
     });
 
-    describe('Mouse Interaction', () => {
-      it('should show the panel when button is clicked', async () => {
+    
+    describe('Mouse Interactions', () => {
+      it('should show the panel when a button is clicked', async () => {
         expect(panel.isVisible()).toBe(false);
 
         await button.trigger('pointerup');
@@ -80,7 +82,7 @@ describe('TheAccordion', () => {
         expect(panel.isVisible()).toBe(true);
       })
 
-      it('should close the panel when the button is clicked again', async () => {
+      it('should close an opened panel when their respective button is clicked', async () => {
         await button.trigger('pointerup');
 
         expect(panel.isVisible()).toBe(true);
@@ -91,18 +93,18 @@ describe('TheAccordion', () => {
       })
     })
 
-    describe('Keyboard navigation', () => {
+    describe('Keyboard Navigation', () => {
       describe('Space Key', () => {
-        it('should be possible to show the panel when the Space key is pressed', async () => {
+        it('should be possible to show a panel when the Space key is pressed on the respective button', async () => {
           expect(panel.isVisible()).toBe(false);
 
           await button.trigger('focus');
           await button.trigger('keydown', { code: 'Space' });
 
           expect(panel.isVisible()).toBe(true);
-        });
+        })
 
-        it('should be possible to close the panel when the Space key is pressed', async () => {
+        it('should be possible to close an already opened panel when the Space key is pressed on the respective button', async () => {
           await button.trigger('pointerup');
 
           expect(panel.isVisible()).toBe(true);
@@ -111,20 +113,20 @@ describe('TheAccordion', () => {
           await button.trigger('keydown', { code: 'Space' });
 
           expect(panel.isVisible()).toBe(false);
-        });
+        })
       })
 
       describe('Enter Key', () => {
-        it('should be possible to show the panel when the Enter key is pressed', async () => {
+        it('should be possible to show a panel when the Enter key is pressed on the respective button', async () => {
           expect(panel.isVisible()).toBe(false);
 
           await button.trigger('focus');
           await button.trigger('keydown', { code: 'Enter' });
 
           expect(panel.isVisible()).toBe(true);
-        });
+        })
 
-        it('should be possible to close the panel when the Enter key is pressed', async () => {
+        it('should be possible to close an already opened panel when the Enter key is pressed on the respective button', async () => {
           await button.trigger('pointerup');
 
           expect(panel.isVisible()).toBe(true);
@@ -133,12 +135,11 @@ describe('TheAccordion', () => {
           await button.trigger('keydown', { code: 'Enter' });
 
           expect(panel.isVisible()).toBe(false);
-        });
+        })
       })
 
-
       describe('Focus Movement', () => {
-        it('should jump to the last section when "End" is pressed', async () => {
+        it('should move focus to the last button when "End" is pressed', async () => {
           const lastButton = wrapper.findAll('.accordion-button').at(2);
 
           await button.trigger('focus');
@@ -147,7 +148,7 @@ describe('TheAccordion', () => {
           expect(lastButton.element).toBe(document.activeElement);
         })
 
-        it('should jump to the first section when "Home" is pressed', async () => {
+        it('should move focus to the first button when "Home" is pressed', async () => {
           const lastButton = wrapper.findAll('.accordion-button').at(2);
 
           await lastButton.trigger('focus');
@@ -156,7 +157,8 @@ describe('TheAccordion', () => {
           expect(button.element).toBe(document.activeElement);
         })
 
-        it('should jump to the next button when "ArrowDown" is pressed', async () => {
+        it('should move focus to the next button when "ArrowDown" is pressed', async () => {
+
           const secondButton = wrapper.findAll('.accordion-button').at(1);
 
           await button.trigger('focus');
@@ -165,7 +167,7 @@ describe('TheAccordion', () => {
           expect(secondButton.element).toBe(document.activeElement);
         })
 
-        it('should jump to the previous section when "ArrowUp" is pressed', async () => {
+        it('should move focus to the previous button when "ArrowUp" is pressed', async () => {
           const secondButton = wrapper.findAll('.accordion-button').at(1);
 
           await secondButton.trigger('focus');
@@ -189,6 +191,5 @@ describe('TheAccordion', () => {
         expect(panel.attributes('hidden')).not.toBeDefined();
       })
     })
-
   })
 })
